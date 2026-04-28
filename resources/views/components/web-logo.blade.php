@@ -1,0 +1,1 @@
+<img src="{{ asset('img/Logo-perpus.webp') }}" {{ $attributes->merge(['class' => '']) }} alt="Logo Perpustakaan">

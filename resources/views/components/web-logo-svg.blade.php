@@ -1,0 +1,1 @@
+<img src="{{ asset('img/Logo-perpus.svg') }}" {{ $attributes->merge(['class' => 'p-0 m-0 block']) }} alt="Logo">

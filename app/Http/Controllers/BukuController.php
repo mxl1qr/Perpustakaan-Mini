@@ -84,7 +84,7 @@ class BukuController extends Controller
      * Destroy - Menghapus data buku dari database
      * Dipanggil saat: DELETE /buku/{id}
      */
-    public function destroy(string $id)
+    public function destroy(Buku $buku)
     {
         $buku->delete();
 
