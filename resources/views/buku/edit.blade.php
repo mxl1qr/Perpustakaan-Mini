@@ -6,8 +6,8 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow rounded-lg p-6">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white shadow rounded-lg p-4 sm:p-6">
 
                 <form action="{{ route('buku.update', $buku->id) }}" method="POST">
                     @csrf
@@ -55,13 +55,13 @@
                         @enderror
                     </div>
 
-                    <div class="flex gap-3">
+                    <div class="flex flex-col sm:flex-row gap-3">
                         <button type="submit"
-                                class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+                                class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 transition text-center">
                             Update
                         </button>
                         <a href="{{ route('buku.index') }}"
-                           class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300">
+                           class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300 transition text-center">
                             Batal
                         </a>
                     </div>

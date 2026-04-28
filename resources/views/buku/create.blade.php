@@ -1,13 +1,13 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-x1 text-gray-800 leading-tight">
-            Tambah Bukun Baru
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Tambah Buku Baru
         </h2>
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-2x1 mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow rounded-lg p-6">
+        <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="bg-white shadow rounded-lg p-4 sm:p-6">
 
                 <form action="{{ route('buku.store') }}" method="POST">
                     @csrf
@@ -55,13 +55,13 @@
                         @enderror
                     </div>
 
-                    <div class="flex gap-3">
+                    <div class="flex flex-col sm:flex-row gap-3">
                         <button type="submit"
-                                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">
+                                class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition text-center">
                             Simpan
                         </button>
                         <a href="{{ route('buku.index') }}"
-                           class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300">
+                           class="bg-gray-200 text-gray-700 px-6 py-2 rounded hover:bg-gray-300 transition text-center">
                             Batal
                         </a>
                     </div>
