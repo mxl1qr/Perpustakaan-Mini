@@ -11,7 +11,7 @@
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
@@ -196,7 +196,7 @@
                 padding: 14px 24px;
                 background: var(--slate-800);
                 color: #ffffff;
-                font-family: 'Liberation Mono', monospace;
+                font-family: 'Plus Jakarta Sans', sans-serif;
                 font-size: 13px;
                 font-weight: 600;
                 letter-spacing: 2px;
@@ -224,7 +224,8 @@
             }
 
             .btn-login:hover {
-                background: var(--slate-900);
+                /* background: var(--slate-900); */
+                background: rgb(211, 62, 32);
                 transform: translateY(-1px);
                 box-shadow: 0 4px 12px rgba(15, 23, 42, 0.3);
             }
@@ -285,7 +286,7 @@
             /* ─── Right Panel — Hero ─── */
             .login-right {
                 flex: 1.15;
-                background: linear-gradient(160deg, var(--navy) 0%, var(--navy-deeper) 100%);
+                background: linear-gradient(140deg, var(--navy-deeper) 30%, #d4472a 100%);
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -463,7 +464,7 @@
             <div class="login-right">
                 <div class="hero-icon-wrapper">
                     <!-- Book Icon -->
-                    <img src="{{ asset('img/Logo-perpus.webp') }}" alt="Logo Perpustakaan"> 
+                    <img src="{{ asset('favicon.png') }}" alt="Logo Perpustakaan"> 
                 </div>
                 <h2 class="hero-title">Selamat Datang di<br>PerpusMini Library</h2>
                 <p class="hero-desc">

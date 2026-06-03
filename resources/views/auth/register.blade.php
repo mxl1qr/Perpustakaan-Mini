@@ -2,18 +2,25 @@
     <form method="POST" action="{{ route('register') }}">
         @csrf
 
-        <!-- Name -->
+        <!-- NIS -->
         <div>
-            <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-input-label for="nisn" :value="__('NIS')" />
+            <x-text-input id="nisn" class="block mt-1 w-full" type="text" name="nisn" :value="old('nisn')" required autofocus autocomplete="nisn" />
+            <x-input-error :messages="$errors->get('nisn')" class="mt-2" />
+        </div>
+
+        <!-- Nama Lengkap -->
+        <div class="mt-4">
+            <x-input-label for="name" :value="__('Nama Lengkap')" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autocomplete="name" />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
-        <!-- NISN -->
+        <!-- Kelas -->
         <div class="mt-4">
-            <x-input-label for="nisn" :value="__('NISN')" />
-            <x-text-input id="nisn" class="block mt-1 w-full" type="text" name="nisn" :value="old('nisn')" required autofocus autocomplete="nisn" />
-            <x-input-error :messages="$errors->get('nisn')" class="mt-2" />
+            <x-input-label for="kelas" :value="__('Kelas')" />
+            <x-text-input id="kelas" class="block mt-1 w-full" type="text" name="kelas" :value="old('kelas')" required />
+            <x-input-error :messages="$errors->get('kelas')" class="mt-2" />
         </div>
 
         <!-- Email Address -->

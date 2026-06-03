@@ -21,6 +21,7 @@ class AuthenticatedSessionController extends Controller
 
     /**
      * Handle an incoming authentication request.
+     * Redirect berbasis role: admin → /dashboard, anggota → /portal
      */
     public function store(LoginRequest $request): RedirectResponse
     {
@@ -28,7 +29,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        $user = Auth::user();
+
+        if ($user->role === 'admin') {
+            return redirect()->intended(route('dashboard', absolute: false));
+        }
+
+        return redirect()->intended(route('anggota.portal', absolute: false));
     }
 
     /**

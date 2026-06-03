@@ -18,10 +18,17 @@ class NewPasswordController extends Controller
 {
     /**
      * Display the password reset view.
+     * Menampilkan view berbeda tergantung konteks:
+     * - password.set  → anggota baru dari admin (tampilan "Selamat Datang")
+     * - password.reset → lupa password biasa
      */
     public function create(Request $request): View
     {
-        return view('auth.reset-password', ['request' => $request]);
+        $view = request()->routeIs('password.set')
+            ? 'auth.set-password'
+            : 'auth.reset-password';
+
+        return view($view, ['request' => $request]);
     }
 
     /**

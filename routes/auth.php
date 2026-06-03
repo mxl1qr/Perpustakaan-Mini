@@ -33,6 +33,11 @@ Route::middleware('guest')->group(function () {
 
     Route::post('reset-password', [NewPasswordController::class, 'store'])
         ->name('password.store');
+
+    // Route khusus: Set password pertama kali (anggota baru dari admin)
+    Route::get('set-password/{token}', [NewPasswordController::class, 'create'])
+        ->name('password.set');
+
 });
 
 Route::middleware('auth')->group(function () {

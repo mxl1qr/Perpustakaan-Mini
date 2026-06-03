@@ -9,32 +9,34 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Models\User;
 
 class LoginRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, ValidationRule|array<mixed>|string>
+     * Validasi input login.
+     * Field "email" menerima NIS atau alamat email (bukan validated as email format).
      */
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email'    => ['required', 'string'],  // terima NIS atau email
             'password' => ['required', 'string'],
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Autentikasi dengan dukungan NIS atau email.
+     *
+     * Alur:
+     * 1. Jika input mengandung '@' → anggap sebagai email → Auth::attempt biasa
+     * 2. Jika tidak mengandung '@' → anggap sebagai NIS → cari user berdasarkan kolom `nisn`
+     *    kemudian attempt dengan email yang ditemukan
      *
      * @throws ValidationException
      */
@@ -42,25 +44,49 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        $input    = $this->string('email')->trim()->value();
+        $password = $this->input('password');
 
+        // Tentukan apakah input adalah email atau NIS
+        if (str_contains($input, '@')) {
+            // Login via email (admin atau anggota yang tahu emailnya)
+            $credentials = ['email' => $input, 'password' => $password];
+        } else {
+            // Login via NIS → cari user berdasarkan kolom nisn
+            $user = User::where('nisn', $input)->first();
+
+            if (!$user) {
+                RateLimiter::hit($this->throttleKey());
+                throw ValidationException::withMessages([
+                    'email' => 'NIS tidak ditemukan. Pastikan NIS sudah terdaftar di sistem.',
+                ]);
+            }
+
+            $credentials = ['email' => $user->email, 'password' => $password];
+        }
+
+        if (!Auth::attempt($credentials, $this->boolean('remember'))) {
+            RateLimiter::hit($this->throttleKey());
             throw ValidationException::withMessages([
                 'email' => trans('auth.failed'),
+            ]);
+        }
+
+        // Cek admin_verified_at
+        if (is_null(Auth::user()->admin_verified_at)) {
+            Auth::logout();
+            RateLimiter::hit($this->throttleKey());
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda belum diverifikasi oleh admin. Silakan tunggu persetujuan.',
             ]);
         }
 
         RateLimiter::clear($this->throttleKey());
     }
 
-    /**
-     * Ensure the login request is not rate limited.
-     *
-     * @throws ValidationException
-     */
     public function ensureIsNotRateLimited(): void
     {
-        if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
+        if (!RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
@@ -76,11 +102,8 @@ class LoginRequest extends FormRequest
         ]);
     }
 
-    /**
-     * Get the rate limiting throttle key for the request.
-     */
     public function throttleKey(): string
     {
-        return Str::transliterate(Str::lower($this->string('email')).'|'.$this->ip());
+        return Str::transliterate(Str::lower($this->string('email')) . '|' . $this->ip());
     }
 }

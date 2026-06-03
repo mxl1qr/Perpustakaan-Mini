@@ -1,0 +1,11 @@
+<?php
+
+namespace App\Notifications;
+
+use Illuminate\Auth\Notifications\VerifyEmail;
+use Illuminate\Contracts\Queue\ShouldQueue;
+
+class VerifyEmailQueued extends VerifyEmail implements ShouldQueue
+{
+    // Inherits everything from default VerifyEmail but implements ShouldQueue
+}

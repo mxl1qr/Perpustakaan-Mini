@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Buku;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class BukuController extends Controller
 {
@@ -13,11 +14,18 @@ class BukuController extends Controller
      */
     public function index()
     {
-        // Ambil semua data dari tabel buku, urutkan terbaru di atas
-        $bukus = Buku::latest()->get();
+        $totalBuku = Buku::count();
+        $bukuBaru = Buku::whereMonth('created_at', now()->month)
+                        ->whereYear('created_at', now()->year)
+                        ->count();
+        
+        $kategoris = \App\Models\Kategori::all();
+
+        // Ambil semua data dari tabel buku beserta relasi kategori, urutkan terbaru di atas
+        $bukus = Buku::with('kategori')->latest()->paginate(15);
 
         // Kirim data ke view resources/views/buku/index.blade.php
-        return view('buku.index', compact('bukus'));
+        return view('buku.index', compact('bukus', 'totalBuku', 'bukuBaru', 'kategoris'));
     }
 
     /**
@@ -37,14 +45,26 @@ class BukuController extends Controller
     {
         // Validasi input form sebelum disimpan
         $request->validate([
-            'judul' => 'required|string|max:255',
-            'pengarang' => 'required|string|max:255',
+            'judul'        => 'required|string|max:255',
+            'penulis'      => 'required|string|max:255',
+            'penerbit'     => 'required|string|max:255',
+            'isbn'         => 'nullable|string|max:20|unique:bukus,isbn',
+            'deskripsi'    => 'nullable|string',
+            'kategori_id'  => 'nullable|exists:kategoris,id',
             'tahun_terbit' => 'required|integer|digits:4',
-            'stok' => 'required|integer|min:0',
+            'stok'         => 'required|integer|min:0',
+            'cover'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
-        // Simpan ke DB pakai mass assignment
-        Buku::create($request->only(['judul', 'pengarang', 'tahun_terbit', 'stok']));
+        $data = $request->only(['judul', 'penulis', 'penerbit', 'isbn', 'deskripsi', 'kategori_id', 'tahun_terbit', 'stok']);
+
+        // Handle upload cover
+        if ($request->hasFile('cover')) {
+            $data['cover'] = $request->file('cover')->store('covers', 'public');
+        }
+
+        // Simpan ke DB
+        Buku::create($data);
 
         // Redirect ke halaman daftar buku dengan flash message sukses
         return redirect()->route('buku.index')
@@ -68,13 +88,29 @@ class BukuController extends Controller
     public function update(Request $request, Buku $buku)
     {
         $request->validate([
-            'judul' => 'required|string|max:255',
-            'pengarang' => 'required|string|max:255',
+            'judul'        => 'required|string|max:255',
+            'penulis'      => 'required|string|max:255',
+            'penerbit'     => 'required|string|max:255',
+            'isbn'         => 'nullable|string|max:20|unique:bukus,isbn,' . $buku->id,
+            'deskripsi'    => 'nullable|string',
+            'kategori_id'  => 'nullable|exists:kategoris,id',
             'tahun_terbit' => 'required|integer|digits:4',
-            'stok' => 'required|integer|min:0',
+            'stok'         => 'required|integer|min:0',
+            'cover'        => 'nullable|image|mimes:jpeg,png,jpg,webp|max:3072',
         ]);
 
-        $buku->update($request->only(['judul', 'pengarang', 'tahun_terbit', 'stok']));
+        $data = $request->only(['judul', 'penulis', 'penerbit', 'isbn', 'deskripsi', 'kategori_id', 'tahun_terbit', 'stok']);
+
+        // Handle upload cover
+        if ($request->hasFile('cover')) {
+            // Hapus cover lama jika ada
+            if ($buku->cover && Storage::disk('public')->exists($buku->cover)) {
+                Storage::disk('public')->delete($buku->cover);
+            }
+            $data['cover'] = $request->file('cover')->store('covers', 'public');
+        }
+
+        $buku->update($data);
 
         return redirect()->route('buku.index')
                          ->with('success', 'Data buku berhasil diperbarui!');

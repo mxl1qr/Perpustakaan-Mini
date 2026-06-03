@@ -16,16 +16,16 @@
     <form method="POST" action="{{ route('login') }}">
         @csrf
 
-        <!-- Email / Username -->
+        <!-- Email / NIS -->
         <div class="form-group">
-            <label for="email" class="form-label">NIS / Username</label>
+            <label for="email" class="form-label">NIS / Email</label>
             <input
                 id="email"
-                type="email"
+                type="text"
                 name="email"
                 value="{{ old('email') }}"
                 class="form-input"
-                placeholder="Masukkan NIS kamu"
+                placeholder="Masukkan NIS atau email kamu"
                 required
                 autofocus
                 autocomplete="username"
